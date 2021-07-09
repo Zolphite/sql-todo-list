@@ -139,7 +139,7 @@ export default {
     },
     // End Edit Task Functions
 
-    // Delte Todo List item
+    // Delete Todo List item
     deleteTodoItem(index){
       this.is_saving_tasks = true;
       const id_obj = {'id': this.todoListItems[index].id}
