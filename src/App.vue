@@ -49,7 +49,6 @@
 </template>
 
 <script>
-// import firebase from '../utilities/firebase'
 import axios from 'axios'
 
 export default {
@@ -71,14 +70,11 @@ export default {
     }
   },
   mounted(){
-    // this.$nextTick(funciton () {
-    //   console.log(this.$refs.myid)
-    // });
-    // document.getElementById('todo-list-table').DataTable();
+    // Init load of data from sql database
     this.loadTasksData()
   },
   methods: {
-  //   // Create new TODO List task and add it to other tasks
+    // Create new TODO List task and add it to other tasks
     createNewTODOItem(){
       console.log("Create Todo Item");
       // console.log(this.newTask.desc);
@@ -90,9 +86,7 @@ export default {
       console.log(convTime)
       this.newTask.time = date + ' ' + convTime;
       const newItem = { ...this.newTask};
-      // this.todoListItems.unshift(newItem);
 
-      // this.saveTaskData();
       this.insertTodoList(newItem);
       this.newTask.desc = null;
       this.newTask.time = null;
@@ -100,16 +94,19 @@ export default {
     },
     // Insert new task into database
     insertTodoList(item) {
+      this.is_saving_tasks = true;
       axios.post("/api/todo_list/insert", item).then(
         (response) => {
           this.todoListItems.unshift(response.data.entry_list[0]);
+          this.is_saving_tasks = false;
         },
         (error) => {
           console.log(error);
+          this.is_saving_tasks = false;
         }
       );
     },
-  //   // Edit Task Functions
+    // Edit Task Functions
     startEditTask(index){
       this.edit_target = index;
       this.edit_task_text = this.todoListItems[index].desc;
@@ -118,84 +115,61 @@ export default {
     finishEditTask(){
       this.todoListItems[this.edit_target].desc = this.edit_task_text;
       // this.saveTaskData();
+      this.updateTodoItem(this.edit_target)
       this.edit_target = null;
       this.edit_task_text = null;
       this.is_editing_task = false;
     },
+    // Update Todo List item on sql server
+    updateTodoItem(index){
+      this.is_saving_tasks = true;
+      const id_obj = {'id': this.todoListItems[index].id,
+                      'desc': this.todoListItems[index].desc}
+
+      axios.post("/api/todo_list/update", id_obj).then(
+        (response) => {
+          console.log(response.data);
+          this.is_saving_tasks = false;
+        },
+        (error) => {
+          console.log(error);
+          this.is_saving_tasks = false;
+        }
+      );
+    },
     // End Edit Task Functions
+
     // Delte Todo List item
     deleteTodoItem(index){
-      console.log(index);
+      this.is_saving_tasks = true;
       const id_obj = {'id': this.todoListItems[index].id}
       axios.post("/api/todo_list/delete", id_obj).then(
         (response) => {
           console.log(response.data);
           this.todoListItems.splice(index, 1);
+          this.is_saving_tasks = false;
         },
         (error) => {
           console.log(error);
+          this.is_saving_tasks = false;
         }
       );
-      // this.saveTaskData();
     },
     // Laod all the todo_list data
     loadTasksData(){
+      this.is_loading_tasks = true;
       axios.get("/api/todo_list/load").then(
         (response) => {
           this.todoListItems = response.data.entry_list;
+          this.is_loading_tasks = false;
         },
         (error) => {
           console.log(error);
+          this.is_loading_tasks = false;
         }
       );
     },
-  //   // Start Firebase save and load functions
-  //   saveTaskData(){
-  //     this.is_saving_tasks = true;
-  //     const processed_task_data = {'tasks': this.todoListItems}
-  //     console.log(processed_task_data);
-  //     // convert your object into a JSON-string
-  //     var jsonString = JSON.stringify(processed_task_data);
-  //     // create a Blob from the JSON-string
-  //     var new_blob = new Blob([jsonString], {type: "application/json"})
-  //     firebase.storage().ref('users/' + this.authUser.uid + '/savedTask.json').put(new_blob).then(() => {
-  //       this.is_saving_tasks = false;
-  //       // this.resetAddCardDisplay()
-  //       console.log('Save Worked');
-  //     }).catch(error => {
-  //       console.log('Save failed' + error);
-  //       this.is_saving_tasks = false;
-  //       // this.resetAddCardDisplay()
-  //     })
-  //   },
-  //   loadTasksData()
-  //   {
-  //     this.is_loading_tasks = true;
-  //     firebase.storage().ref('users/' + this.authUser.uid + '/savedTask.json').getDownloadURL().then((savedDataURL) => {
-  //       axios.get(savedDataURL)
-  //       .then((response) => {
-  //         console.log(response.data)
-  //         if(response.data.tasks != undefined)
-  //         {
-  //           this.todoListItems = response.data.tasks;
-  //         }
-  //         else 
-  //         {
-  //           this.todoListItems = {};
-  //         }
-  //         this.is_loading_tasks = false;
-  //         // this.is_card_data_loaded = true;
-  //         // this.checkForCardDisplay();
-  //       });
-  //       console.log('Profile Tasks Load Worked');
-  //     }).catch(error => {
-  //       // this.is_card_data_loaded = true;
-  //       console.log('Load failed' + error);
-  //       this.is_loading_tasks = false;
-  //     })
-  //   },
-  //   // End Firebase save and load functions
-  //   // Convert military time to standard time.
+    // Convert military time to standard time.
     convertTime(input){
       var time = input; // your input
 
@@ -221,8 +195,6 @@ export default {
       timeValue += (seconds < 10) ? ":0" + seconds : ":" + seconds;  // get seconds
       timeValue += (hours >= 12) ? " P.M." : " A.M.";  // get AM/PM
 
-      // show
-      // console.log(timeValue);
       return timeValue;
     }
   }

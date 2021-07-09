@@ -70,7 +70,8 @@ def todo_list_insert():
                 }]}
     return send_obj
 
-@app.route('/api/todo_list/delete', methods=['GET', 'POST'])
+# Delete task based on id from todo_list table
+@app.route('/api/todo_list/delete', methods=['POST'])
 def todo_list_delete():
     post_data = request.get_json()
     print(post_data)
@@ -79,18 +80,13 @@ def todo_list_delete():
 
     return 'delete done'
 
-# @app.route('/api/back_end')
-# def test():
-#     return {}
-
-# @app.route('/favicon.ico')
-# def favicon():
-#     return send_from_directory(os.path.join(app.root_path, 'dist'),
-#                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-# @app.route('/api/covid_graph')
-# def covid_graph():
-#     return api_functions.covid_graph(app)
+@app.route('/api/todo_list/update', methods=['POST'])
+def todo_list_update():
+    post_data = request.get_json()
+    print(post_data)
+    cursor.execute("UPDATE todo_list SET task='{}' WHERE id = {}".format(post_data['desc'], post_data['id']))
+    mariadb_con.commit()
+    return 'update done'
 
 if __name__ == "__main__":
     print("server is running on localhost!!")
