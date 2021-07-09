@@ -1,5 +1,6 @@
 # Python Ignores
 /venv
+initDB.py
 
 .DS_Store
 node_modules

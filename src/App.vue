@@ -50,7 +50,7 @@
 
 <script>
 // import firebase from '../utilities/firebase'
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
   props: ['authUser'],
@@ -75,7 +75,7 @@ export default {
     //   console.log(this.$refs.myid)
     // });
     // document.getElementById('todo-list-table').DataTable();
-    // this.loadTasksData()
+    this.loadTasksData()
   },
   methods: {
   //   // Create new TODO List task and add it to other tasks
@@ -90,12 +90,24 @@ export default {
       console.log(convTime)
       this.newTask.time = date + ' ' + convTime;
       const newItem = { ...this.newTask};
-      this.todoListItems.unshift(newItem);
+      // this.todoListItems.unshift(newItem);
 
       // this.saveTaskData();
+      this.insertTodoList(newItem);
       this.newTask.desc = null;
       this.newTask.time = null;
       this.is_creating_task = false;
+    },
+    // Insert new task into database
+    insertTodoList(item) {
+      axios.post("/api/todo_list/insert", item).then(
+        (response) => {
+          this.todoListItems.unshift(response.data.entry_list[0]);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
     },
   //   // Edit Task Functions
     startEditTask(index){
@@ -110,12 +122,32 @@ export default {
       this.edit_task_text = null;
       this.is_editing_task = false;
     },
-  //   // End Edit Task Functions
-  //   // Delte Todo List item
+    // End Edit Task Functions
+    // Delte Todo List item
     deleteTodoItem(index){
       console.log(index);
-      this.todoListItems.splice(index, 1);
+      const id_obj = {'id': this.todoListItems[index].id}
+      axios.post("/api/todo_list/delete", id_obj).then(
+        (response) => {
+          console.log(response.data);
+          this.todoListItems.splice(index, 1);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
       // this.saveTaskData();
+    },
+    // Laod all the todo_list data
+    loadTasksData(){
+      axios.get("/api/todo_list/load").then(
+        (response) => {
+          this.todoListItems = response.data.entry_list;
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
     },
   //   // Start Firebase save and load functions
   //   saveTaskData(){
