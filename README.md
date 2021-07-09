@@ -1,6 +1,11 @@
 # sql-todo-list
 ```
-For the SQL connection mariadb needs to be installed to the local machine and the connection to mariadb needs to be updated in the app.py file. The app wil create a todo_app database if it does not exist and than create a todo_list table within the database if the table does not exist. This way the database and table with create it self it does not exist but if it does than the todo_list table will be affected. Please make sure that there is no database named todo_app when first running app.py file.
+For the SQL connection mariadb needs to be installed to the local machine and the connection 
+to mariadb needs to be updated in the app.py file. The app wil create a todo_app database if 
+it does not exist and than create a todo_list table within the database if the table does not 
+exist. This way the database and table with create it self it does not exist but if it does 
+than the todo_list table will be affected. Please make sure that there is no database named 
+todo_app when first running app.py file.
 ```
 ## A) Install MariaDB(For Manjaro Linux)
 ```
