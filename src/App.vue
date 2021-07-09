@@ -26,7 +26,7 @@
     <table id="todo-list-table" ref="todo" class="table table-striped" style="width:100%">
         <thead>
           <tr>
-            <th class="h4">Items</th>
+            <th class="h4">Tasks</th>
             <th class="h4">Times</th>
             <th class="h4">Actions</th>
           </tr>
