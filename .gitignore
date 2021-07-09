@@ -1,3 +1,6 @@
+# Python Ignores
+/venv
+
 .DS_Store
 node_modules
 /dist
