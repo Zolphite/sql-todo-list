@@ -50,7 +50,7 @@ def todo_list_load():
 @app.route('/api/todo_list/insert', methods=['GET', 'POST'])
 def todo_list_insert():
     post_data = request.get_json()
-    cursor.execute("INSERT INTO todo_list (task, time) VALUES ('{}', '{}')".format(post_data['desc'],post_data['time']))
+    cursor.execute("INSERT INTO todo_list (task, time) VALUES (%(tasks)s, %(times)s)", {'tasks': post_data['desc'], 'times': post_data['time']}) # .format(post_data['desc'],post_data['time']))
     mariadb_con.commit()
     # cursor.execute("SELECT * FROM todo_list ORDER BY id DESC LIMIT 1")
     cursor.execute("SELECT * FROM todo_list ORDER BY id DESC")
