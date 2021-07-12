@@ -75,7 +75,7 @@ def todo_list_insert():
 def todo_list_delete():
     post_data = request.get_json()
     print(post_data)
-    cursor.execute("DELETE FROM todo_list WHERE id = {}".format(post_data['id']))
+    cursor.execute("DELETE FROM todo_list WHERE id = %(id)s", {'id': post_data['id']})
     mariadb_con.commit()
 
     return 'delete done'
@@ -84,7 +84,7 @@ def todo_list_delete():
 def todo_list_update():
     post_data = request.get_json()
     print(post_data)
-    cursor.execute("UPDATE todo_list SET task='{}' WHERE id = {}".format(post_data['desc'], post_data['id']))
+    cursor.execute("UPDATE todo_list SET task=%(tasks)s WHERE id = %(id)s", {'tasks': post_data['desc'], 'id': post_data['id']})
     mariadb_con.commit()
     return 'update done'
 
